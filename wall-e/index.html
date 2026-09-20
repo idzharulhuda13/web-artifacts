@@ -371,6 +371,7 @@
       cursor: pointer;
     }
 
+    input[type=range]:focus,
     input[type=range]:focus-visible {
       outline: 2px solid var(--color-accent);
       outline-offset: 2px;
@@ -1304,6 +1305,9 @@
       routine: 'idle',
       routineTimer: 0,
 
+      // Power readout
+      solar: 98.4,
+
       // Vehicle Drive Physics
       speed: 0,
       angularSpeed: 0,
@@ -1331,6 +1335,8 @@
     };
 
     window.addEventListener('keydown', (e) => {
+      /* A focused control keeps its own arrow keys: do not also drive the robot. */
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
       if (['ArrowUp', 'KeyW'].includes(e.code)) keys.forward = true;
       if (['ArrowDown', 'KeyS'].includes(e.code)) keys.backward = true;
       if (['ArrowLeft', 'KeyA'].includes(e.code)) keys.left = true;
@@ -1365,7 +1371,7 @@
     /* =====================================================================
        6. BEHAVIOUR KINEMATICS ENGINE (Real Joint Articulations)
        ===================================================================== */
-    function applyBehaviourRoutines(dt, time) {
+    function applyBehaviourRoutines(dt) {
       state.routineTimer += dt;
       const t = state.routineTimer;
 
@@ -1377,6 +1383,13 @@
       let rHeadRotZ = 0;
       let rLeftEyeZ = 0;
       let rRightEyeZ = 0;
+
+      /* Reset the channels a previous routine may have moved, so switching
+         routines never leaves a stale pose behind. */
+      robotRoot.rotation.z = 0;
+      headGroup.position.x = 0;
+      chassisGroup.position.y = 1.05;
+      doorMesh.position.z = 0.65;
 
       switch (state.routine) {
         case 'idle':
@@ -1418,8 +1431,8 @@
           // Yearning posture: neck extended high, head angled to sky, arms forward
           rNeckOffset = 0.45;
           rHeadRotX = -0.45 + Math.sin(t * 3.0) * 0.04;
-          leftEye.eyeGroup.rotation.z = -0.15;
-          rightEye.eyeGroup.rotation.z = 0.15;
+          rLeftEyeZ = -0.15;
+          rRightEyeZ = 0.15;
           leftArm.shoulderPivot.rotation.x = -0.7;
           rightArm.shoulderPivot.rotation.x = -0.7;
           // Excited tremble
@@ -1439,8 +1452,8 @@
           // Neck fully retracted, eyes drooping downward
           rNeckOffset = -0.15;
           rHeadRotX = 0.35;
-          leftEye.eyeGroup.rotation.z = 0.22;
-          rightEye.eyeGroup.rotation.z = -0.22;
+          rLeftEyeZ = 0.22;
+          rRightEyeZ = -0.22;
           leftArm.shoulderPivot.rotation.x = 0.3;
           rightArm.shoulderPivot.rotation.x = 0.3;
           break;
@@ -1494,6 +1507,7 @@
     const statHeadingEl = document.getElementById('stat-heading');
     const statPosEl = document.getElementById('stat-pos');
     const statSlipEl = document.getElementById('stat-slip');
+    const solarReadoutEl = document.getElementById('solar-readout');
     const fpsReadoutEl = document.getElementById('fps-readout');
 
     function animate(currentTime) {
@@ -1563,7 +1577,7 @@
       }
 
       /* Kinematic routines */
-      applyBehaviourRoutines(dt, currentTime * 0.001);
+      applyBehaviourRoutines(dt);
 
       /* Controls update */
       controls.update();
@@ -1583,6 +1597,11 @@
          current speed, capped so the readout stays in a realistic band. */
       const slipRatio = Math.min(9.5, Math.abs(steer) * Math.abs(state.speed) * 4.2);
       statSlipEl.textContent = `${slipRatio.toFixed(1)} %`;
+
+      /* Solar charge is a live value: it drains while the robot drives and
+         regenerates while it is parked. */
+      state.solar = Math.max(62, Math.min(99.4, state.solar - Math.abs(state.speed) * dt * 0.35 + 0.6 * dt));
+      solarReadoutEl.textContent = `${state.solar.toFixed(1)}%`;
 
       /* FPS counter update */
       frameCount++;
