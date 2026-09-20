@@ -661,19 +661,23 @@
         <div class="spec-block">
           <div class="spec-row">
             <span class="spec-k">Payload</span>
-            <span class="spec-v">1 bundled file, 315 KB</span>
+            <span class="spec-v">2 files, 66 KB</span>
           </div>
           <div class="spec-row">
             <span class="spec-k">Added</span>
-            <span class="spec-v">9 Sep 2026</span>
+            <span class="spec-v">20 Sep 2026</span>
           </div>
           <div class="spec-row">
             <span class="spec-k">Architecture</span>
-            <span class="spec-v">React, Tailwind, shadcn/ui</span>
+            <span class="spec-v">1 hand-written file + data.json</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-k">Controls</span>
+            <span class="spec-v">Direction, category, month switcher</span>
           </div>
           <div class="spec-row">
             <span class="spec-k">Dataset</span>
-            <span class="spec-v">Filterable table</span>
+            <span class="spec-v">42 rows from data.json</span>
           </div>
         </div>
         <div class="plate-action">
@@ -683,17 +687,17 @@
 
       <div class="plate-media">
         <div class="chart-frame">
-          <!-- Hand-built SVG chart plotting the 6 sample rows. All currency numbers remain strictly inside this SVG. -->
-          <svg class="chart-svg" viewBox="0 0 540 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cashflow transaction ledger chart showing sample transactions and cumulative balance">
+          <!-- Hand-built SVG chart plotting 6 September rows as a static preview. All currency numbers remain strictly inside this SVG. -->
+          <svg class="chart-svg" viewBox="0 0 540 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cashflow transaction ledger chart showing September 2026 preview transactions and cumulative balance">
             <!-- Chart Background Panel -->
             <rect width="540" height="280" fill="#10130F" />
             
             <!-- Technical Header Bar -->
             <rect x="0" y="0" width="540" height="36" fill="rgba(60,74,68,0.3)" />
             <line x1="0" y1="36" x2="540" y2="36" stroke="rgba(237,234,226,0.15)" stroke-width="1" />
-            <text x="16" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="500">PERIOD BALANCE: 8,930,000</text>
-            <text x="310" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">INCOME: 12,850,000</text>
-            <text x="430" y="23" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="12">EXPENSE: 3,920,000</text>
+            <text x="16" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="500">SEP 2026 MOVEMENT: 4.220.000</text>
+            <text x="245" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">INCOME: 15.600.000</text>
+            <text x="395" y="23" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="12">EXPENSE: 11.380.000</text>
 
             <!-- Grid Lines -->
             <!-- Baseline Zero at Y=180 -->
@@ -774,12 +778,12 @@
 
             <!-- Net Balance marker -->
             <rect x="420" y="92" width="105" height="18" fill="rgba(16,19,15,0.85)" stroke="#FFB000" stroke-width="1" />
-            <text x="425" y="105" fill="#FFB000" font-family="IBM Plex Mono, monospace" font-size="12">NET: 8,930,000</text>
+            <text x="425" y="105" fill="#FFB000" font-family="IBM Plex Mono, monospace" font-size="12">NET: 4.220.000</text>
           </svg>
         </div>
         <div class="media-caption">
-          <span>Vector plot</span>
-          <span>Direct SVG geometry</span>
+          <span>September snapshot</span>
+          <span>Artifact holds two months and 42 rows</span>
         </div>
       </div>
     </article>
@@ -796,7 +800,7 @@
     <footer class="colophon">
       <div class="colophon-meta">
         <span>2 published artifacts</span>
-        <span>Vanilla browser runtimes</span>
+        <span>Hand-written files, browser-native, no framework at runtime</span>
       </div>
       <div class="colophon-links">
         <a class="colophon-link" href="https://github.com/idzharulhuda13/web-artifacts" target="_blank" rel="noopener">Source repository</a>
