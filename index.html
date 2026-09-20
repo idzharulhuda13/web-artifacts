@@ -1,0 +1,301 @@
+<!--
+  Dial: ENERGY 2 / RHYTHM 3 / MOTION 1
+  ENERGY 2: Confident editorial poster stance with warm cream grounding and punchy burnt-orange accents.
+  RHYTHM 3: Asymmetric editorial composition varying between poster header, framed artifact cards, and grouped link rows.
+  MOTION 1: Completely static document with zero JavaScript, relying purely on instantaneous state feedback for focus and hover.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web artifacts</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23faf7f2'/%3E%3Crect x='5' y='6' width='22' height='4' fill='%239e3808'/%3E%3Crect x='5' y='14' width='15' height='4' fill='%23241d17'/%3E%3Crect x='5' y='22' width='19' height='4' fill='%23241d17'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      /* Colors: 2 core neutrals + 1 accent */
+      --color-bg: #FAF7F2;
+      --color-surface: #FFFFFF;
+      --color-ink: #191512;
+      --color-ink-muted: #574F46;
+      --color-accent: #9E3808;
+      --color-accent-hover: #7E2C04;
+      --color-border: #E4DACD;
+      --color-focus: #9E3808;
+
+      /* Typography */
+      --font-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      --tracking-tight: -0.02em;
+
+      /* Type Scale */
+      --text-xs: 0.8125rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.375rem;
+      --text-3xl: 2.5rem;
+
+      /* Font Weights */
+      --weight-medium: 500;
+      --weight-semibold: 600;
+      --weight-bold: 700;
+
+      /* Line Heights */
+      --leading-none: 1;
+      --leading-tight: 1.15;
+      --leading-snug: 1.35;
+      --leading-normal: 1.5;
+      --leading-relaxed: 1.65;
+
+      /* Spacing Scale */
+      --space-0: 0;
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      /* Borders & Radii */
+      --border-thin: 1px;
+      --border-medium: 2px;
+      --border-heavy: 4px;
+      --radius-sm: 2px;
+
+      /* Sizing */
+      --max-width-page: 46rem;
+      --measure-desc: 38rem;
+      --min-target-size: 44px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: var(--space-0);
+      padding: var(--space-0);
+    }
+
+    html {
+      background-color: var(--color-bg);
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      padding-top: var(--space-10);
+      padding-bottom: var(--space-16);
+      padding-left: var(--space-4);
+      padding-right: var(--space-4);
+    }
+
+    .container {
+      max-width: var(--max-width-page);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Page Header */
+    .header {
+      border-top: var(--border-heavy) solid var(--color-accent);
+      padding-top: var(--space-6);
+      margin-bottom: var(--space-10);
+    }
+
+    .header-title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-tight);
+      color: var(--color-ink);
+      margin-bottom: var(--space-3);
+    }
+
+    .header-desc {
+      font-size: var(--text-lg);
+      line-height: var(--leading-snug);
+      color: var(--color-ink-muted);
+      max-width: var(--measure-desc);
+    }
+
+    /* Artifact List */
+    .artifact-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      margin-bottom: var(--space-12);
+    }
+
+    .artifact-card {
+      background-color: var(--color-surface);
+      border: var(--border-thin) solid var(--color-border);
+      border-top: var(--border-heavy) solid var(--color-accent);
+      border-radius: var(--radius-sm);
+      padding: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .artifact-title {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      line-height: var(--leading-tight);
+      color: var(--color-ink);
+    }
+
+    .artifact-description {
+      font-size: var(--text-base);
+      line-height: var(--leading-normal);
+      color: var(--color-ink);
+    }
+
+    .artifact-meta {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      line-height: var(--leading-normal);
+      color: var(--color-ink-muted);
+      word-break: break-word;
+    }
+
+    .artifact-action {
+      margin-top: var(--space-1);
+    }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--min-target-size);
+      padding-top: var(--space-2);
+      padding-bottom: var(--space-2);
+      padding-left: var(--space-5);
+      padding-right: var(--space-5);
+      background-color: var(--color-accent);
+      color: var(--color-surface);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      line-height: var(--leading-none);
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-link:hover {
+      background-color: var(--color-accent-hover);
+    }
+
+    /* Elsewhere Group */
+    .elsewhere-section {
+      border-top: var(--border-thin) solid var(--color-border);
+      padding-top: var(--space-8);
+      margin-bottom: var(--space-12);
+    }
+
+    .elsewhere-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-bold);
+      line-height: var(--leading-snug);
+      color: var(--color-ink);
+      margin-bottom: var(--space-3);
+    }
+
+    .elsewhere-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-5);
+    }
+
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--min-target-size);
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: var(--color-accent);
+      text-decoration: underline;
+      text-underline-offset: var(--space-1);
+    }
+
+    .text-link:hover {
+      color: var(--color-accent-hover);
+    }
+
+    /* Footer */
+    .footer {
+      border-top: var(--border-thin) solid var(--color-border);
+      padding-top: var(--space-6);
+    }
+
+    .footer-text {
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--color-ink-muted);
+    }
+
+    .footer-link {
+      color: var(--color-accent);
+      text-decoration: underline;
+      text-underline-offset: var(--space-1);
+    }
+
+    .footer-link:hover {
+      color: var(--color-accent-hover);
+    }
+
+    /* Keyboard Focus Ring */
+    a:focus-visible {
+      outline: var(--border-medium) solid var(--color-focus);
+      outline-offset: var(--space-1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="header-title">Web artifacts</h1>
+      <p class="header-desc">Self-contained HTML artifacts. One file each, nothing to install, served straight from this repository.</p>
+    </header>
+
+    <main class="artifact-list">
+      <article class="artifact-card">
+        <h2 class="artifact-title">WALL-E Console</h2>
+        <p class="artifact-description">Interactive 3D model of a WALL-E style robot: five camera presets, eight behaviour routines, live servo sliders, an exploded-view teardown, and a driving telemetry readout.</p>
+        <p class="artifact-meta">Three.js via CDN  ·  1 file, 64 KB  ·  21 buttons, 5 sliders  ·  added 20 Sep 2026</p>
+        <div class="artifact-action">
+          <a class="btn-link" href="./wall-e/">Open WALL-E Console</a>
+        </div>
+      </article>
+
+      <article class="artifact-card">
+        <h2 class="artifact-title">Ringkasan Cashflow</h2>
+        <p class="artifact-description">Interactive dashboard for a monthly cashflow ledger: period balance, income against expense, and a filterable transaction table. Shipped with sample data, not real figures.</p>
+        <p class="artifact-meta">React, Tailwind, shadcn/ui  ·  1 bundled file, 315 KB  ·  added 9 Sep 2026</p>
+        <div class="artifact-action">
+          <a class="btn-link" href="./cashflow/">Open Ringkasan Cashflow</a>
+        </div>
+      </article>
+    </main>
+
+    <section class="elsewhere-section">
+      <h2 class="elsewhere-title">Elsewhere</h2>
+      <div class="elsewhere-links">
+        <a class="text-link" href="https://idzharulhuda13.github.io/idzharulhuda-portfolio/" target="_blank" rel="noopener">Portfolio</a>
+        <a class="text-link" href="https://idzharulhuda13.github.io/idzharulhuda-portfolio/resume.html" target="_blank" rel="noopener">Resume</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="footer-text">Source: <a class="footer-link" href="https://github.com/idzharulhuda13/web-artifacts" target="_blank" rel="noopener">github.com/idzharulhuda13/web-artifacts</a>. Each artifact is one HTML file; the newest sits at the top.</p>
+    </footer>
+  </div>
+</body>
+</html>
