@@ -45,7 +45,7 @@
     :root {
       /* Palette from DESIGN.md */
       --ink: #10130F;
-      --paper: #EDEAE2;
+      --paper: #E9E7E1;
       --steel: #3C4A44;
       --signal: #FF4D00;
       --warning: #FFB000;
@@ -349,8 +349,7 @@
       font-family: var(--font-mono);
       font-size: var(--text-xs);
       color: var(--steel-text);
-      letter-spacing: var(--tracking-wide);
-      text-transform: uppercase;
+      letter-spacing: var(--tracking-normal);
     }
 
     .plate-title {
@@ -594,11 +593,6 @@
             <path d="M185,90 h10 M190,85 v10" stroke="#FF4D00" stroke-width="1.5" />
             <path d="M85,45 h10 M90,40 v10" stroke="rgba(237,234,226,0.4)" stroke-width="1" />
             <path d="M285,135 h10 M290,130 v10" stroke="rgba(237,234,226,0.4)" stroke-width="1" />
-            <!-- Technical notations -->
-            <text x="12" y="24" fill="rgba(237,234,226,0.6)" font-family="IBM Plex Mono, monospace" font-size="9">GRID REF: SEC-01</text>
-            <text x="12" y="166" fill="rgba(237,234,226,0.6)" font-family="IBM Plex Mono, monospace" font-size="9">SCALE: 1.00 RATIO</text>
-            <text x="310" y="24" fill="rgba(237,234,226,0.6)" font-family="IBM Plex Mono, monospace" font-size="9">ORBIT: 360</text>
-            <text x="300" y="166" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="9">LIVE RENDER</text>
           </svg>
         </div>
       </div>
@@ -697,24 +691,24 @@
             <!-- Technical Header Bar -->
             <rect x="0" y="0" width="540" height="36" fill="rgba(60,74,68,0.3)" />
             <line x1="0" y1="36" x2="540" y2="36" stroke="rgba(237,234,226,0.15)" stroke-width="1" />
-            <text x="16" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="500">PERIOD BALANCE: 11,548,000</text>
-            <text x="310" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="10">INCOME: 16,250,000</text>
-            <text x="430" y="23" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="10">EXPENSE: 4,702,000</text>
+            <text x="16" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="500">PERIOD BALANCE: 11,548,000</text>
+            <text x="310" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">INCOME: 16,250,000</text>
+            <text x="430" y="23" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="12">EXPENSE: 4,702,000</text>
 
             <!-- Grid Lines -->
             <!-- Baseline Zero at Y=180 -->
             <line x1="50" y1="70" x2="515" y2="70" stroke="rgba(237,234,226,0.08)" stroke-width="1" stroke-dasharray="2 2" />
-            <text x="44" y="73" fill="rgba(237,234,226,0.4)" font-family="IBM Plex Mono, monospace" font-size="8" text-anchor="end">+12.5M</text>
+            <text x="44" y="73" fill="rgba(237,234,226,0.4)" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="end">+12.5M</text>
 
             <line x1="50" y1="125" x2="515" y2="125" stroke="rgba(237,234,226,0.08)" stroke-width="1" stroke-dasharray="2 2" />
-            <text x="44" y="128" fill="rgba(237,234,226,0.4)" font-family="IBM Plex Mono, monospace" font-size="8" text-anchor="end">+5.0M</text>
+            <text x="44" y="128" fill="rgba(237,234,226,0.4)" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="end">+5.0M</text>
 
             <!-- Zero Axis -->
             <line x1="50" y1="180" x2="515" y2="180" stroke="#EDEAE2" stroke-width="1.2" />
-            <text x="44" y="183" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="end">0</text>
+            <text x="44" y="183" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="end">0</text>
 
             <line x1="50" y1="210" x2="515" y2="210" stroke="rgba(237,234,226,0.08)" stroke-width="1" stroke-dasharray="2 2" />
-            <text x="44" y="213" fill="rgba(237,234,226,0.4)" font-family="IBM Plex Mono, monospace" font-size="8" text-anchor="end">-2.5M</text>
+            <text x="44" y="213" fill="rgba(237,234,226,0.4)" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="end">-2.5M</text>
 
             <!-- 6 Sample Rows:
                  1 Sep: -350,000
@@ -728,38 +722,38 @@
             <!-- Col 1: 1 Sep -350,000 (X=85) -->
             <line x1="85" y1="45" x2="85" y2="235" stroke="rgba(237,234,226,0.05)" stroke-width="1" />
             <rect x="73" y="180" width="24" height="4" fill="#FF4D00" />
-            <text x="85" y="200" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">-350,000</text>
-            <text x="85" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">1 Sep</text>
+            <text x="85" y="200" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">-350,000</text>
+            <text x="85" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">1 Sep</text>
 
             <!-- Col 2: 2 Sep +3,750,000 (X=165) -->
             <line x1="165" y1="45" x2="165" y2="235" stroke="rgba(237,234,226,0.05)" stroke-width="1" />
             <rect x="153" y="147" width="24" height="33" fill="#3C4A44" stroke="rgba(237,234,226,0.3)" stroke-width="1" />
-            <text x="165" y="139" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">+3,750,000</text>
-            <text x="165" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">2 Sep</text>
+            <text x="165" y="139" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">+3,750,000</text>
+            <text x="165" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">2 Sep</text>
 
             <!-- Col 3: 4 Sep -502,000 (X=245) -->
             <line x1="245" y1="45" x2="245" y2="235" stroke="rgba(237,234,226,0.05)" stroke-width="1" />
             <rect x="233" y="180" width="24" height="6" fill="#FF4D00" />
-            <text x="245" y="202" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">-502,000</text>
-            <text x="245" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">4 Sep</text>
+            <text x="245" y="202" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">-502,000</text>
+            <text x="245" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">4 Sep</text>
 
             <!-- Col 4: 6 Sep -1,850,000 (X=325) -->
             <line x1="325" y1="45" x2="325" y2="235" stroke="rgba(237,234,226,0.05)" stroke-width="1" />
             <rect x="313" y="180" width="24" height="19" fill="#FF4D00" />
-            <text x="325" y="215" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">-1,850,000</text>
-            <text x="325" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">6 Sep</text>
+            <text x="325" y="215" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">-1,850,000</text>
+            <text x="325" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">6 Sep</text>
 
             <!-- Col 5: 7 Sep -2,000,000 (X=405) -->
             <line x1="405" y1="45" x2="405" y2="235" stroke="rgba(237,234,226,0.05)" stroke-width="1" />
             <rect x="393" y="180" width="24" height="21" fill="#FF4D00" />
-            <text x="405" y="217" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">-2,000,000</text>
-            <text x="405" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">7 Sep</text>
+            <text x="405" y="217" fill="#FF4D00" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">-2,000,000</text>
+            <text x="405" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">7 Sep</text>
 
             <!-- Col 6: 8 Sep +12,500,000 (X=485) -->
             <line x1="485" y1="45" x2="485" y2="235" stroke="rgba(237,234,226,0.05)" stroke-width="1" />
             <rect x="473" y="70" width="24" height="110" fill="#EDEAE2" />
-            <text x="485" y="62" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">+12,500,000</text>
-            <text x="485" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">8 Sep</text>
+            <text x="485" y="62" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">+12,500,000</text>
+            <text x="485" y="250" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">8 Sep</text>
 
             <!-- Cumulative Trendline Overlay connecting net position:
                  Start: 0
@@ -780,7 +774,7 @@
 
             <!-- Net Balance marker -->
             <rect x="420" y="92" width="105" height="18" fill="rgba(16,19,15,0.85)" stroke="#FFB000" stroke-width="1" />
-            <text x="425" y="105" fill="#FFB000" font-family="IBM Plex Mono, monospace" font-size="9">NET: 11,548,000</text>
+            <text x="425" y="105" fill="#FFB000" font-family="IBM Plex Mono, monospace" font-size="12">NET: 11,548,000</text>
           </svg>
         </div>
         <div class="media-caption">
