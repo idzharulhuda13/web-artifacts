@@ -131,14 +131,70 @@
     var marginL = 50, marginR = 30, binWidth = 34;
     var plotWidth = Math.max(760, bins.length * binWidth), svgWidth = plotWidth + marginL + marginR;
     var axisY = 190, personAreaHeight = 145, itemRowHeight = 18;
-    var itemAreaHeight = Math.max(250, maxItemsInBin * itemRowHeight + 65);
+    var curBinW = plotWidth / bins.length;
+
+    // Chart rules pinned here, because both renderers broke them once and each one is measurable:
+    //
+    // 1. Text never shrinks below the pinned micro label (12px). The SVG keeps a 1:1 minimum width
+    //    (`min-width: <svgWidth>px` below), scales up with its container and scrolls inside
+    //    `.wright-scale-box` / `.cmp-chart-scroll`. A renderer whose text scaled down with the
+    //    viewport measured 11px labels at about 7px on a narrow screen, 156 of 158 under the floor.
+    // 2. Item labels sit in columns on a grid wider than a box (pitch 46 against box 38), so two
+    //    boxes can never overlap however tightly the item measures cluster; a full column spills
+    //    sideways, and the canvas height follows the tallest column. The earlier geometry put
+    //    38-unit boxes on a 34-unit pitch and produced 34 overlapping pairs.
+    // 3. A label may sit off the item's own x only while its box still covers it; past that the
+    //    group carries a `label-leader` line back to `data-bin-x`, so a box never claims a position
+    //    the item does not have.
+    // 4. Chart colour is the token (`var(--accent)`, `var(--ink)`, `var(--misfit)`), which is what
+    //    lets the theme swap repaint both charts with no redraw and no second palette.
+    var LABEL_BOX_W = 38, LABEL_PITCH = 46, ITEM_TOP = 54, LABEL_ROWS_MAX = 12;
+    var itemRows = [];
+    for (var rIdx = 0; rIdx < bins.length; rIdx++) {
+      var binEntries = String(bins[rIdx][3] || '').trim().split(/\s+/).filter(Boolean);
+      for (var bEntry = 0; bEntry < binEntries.length; bEntry++) {
+        var parsedEntry = parseInt(binEntries[bEntry], 10);
+        if (isNaN(parsedEntry)) continue;
+        itemRows.push({
+          entry: parsedEntry,
+          binX: marginL + rIdx * curBinW + curBinW / 2,
+          measure: bins[rIdx][0]
+        });
+      }
+    }
+    var gridX = [];
+    for (var gx = marginL + curBinW / 2; gx <= marginL + plotWidth - LABEL_BOX_W / 2 + 1; gx += LABEL_PITCH) {
+      gridX.push(Math.round(gx));
+    }
+    if (gridX.length === 0) gridX.push(Math.round(marginL + plotWidth / 2));
+    var columnOf = [];
+    for (var cInit = 0; cInit < gridX.length; cInit++) columnOf.push([]);
+    var tallestColumn = 1;
+    for (var iIdx = 0; iIdx < itemRows.length; iIdx++) {
+      var preferred = Math.round((itemRows[iIdx].binX - gridX[0]) / LABEL_PITCH);
+      if (preferred < 0) preferred = 0;
+      if (preferred > gridX.length - 1) preferred = gridX.length - 1;
+      var target = -1;
+      for (var step = 0; step < gridX.length && target < 0; step++) {
+        if (step === 0) {
+          if (columnOf[preferred].length < LABEL_ROWS_MAX) target = preferred;
+        } else {
+          if (preferred + step < gridX.length && columnOf[preferred + step].length < LABEL_ROWS_MAX) target = preferred + step;
+          else if (preferred - step >= 0 && columnOf[preferred - step].length < LABEL_ROWS_MAX) target = preferred - step;
+        }
+      }
+      if (target < 0) continue;
+      columnOf[target].push(itemRows[iIdx]);
+      if (columnOf[target].length > tallestColumn) tallestColumn = columnOf[target].length;
+    }
+    var itemAreaHeight = Math.max(250, tallestColumn * itemRowHeight + 65);
     var svgHeight = axisY + itemAreaHeight;
 
     var svg = svgEl('svg', {
       role: 'img',
       'aria-label': 'Peta Wright: rentang ' + minM.toFixed(2) + ' hingga ' + maxM.toFixed(2) + ' logit, ' + totalPersons + ' partisipan, ' + totalItems + ' butir',
       viewBox: '0 0 ' + svgWidth + ' ' + svgHeight,
-      style: 'min-width: 600px; width: 100%; height: auto; display: block;'
+      style: 'min-width: ' + svgWidth + 'px; width: 100%; height: auto; display: block;'
     });
     svg.appendChild(svgEl('title', null, 'Peta Wright (skala logit: ' + minM.toFixed(2) + ' sampai ' + maxM.toFixed(2) + ')'));
     svg.appendChild(svgEl('style', null,
@@ -218,40 +274,56 @@
       };
     }
 
-    for (var kIdx = 0; kIdx < bins.length; kIdx++) {
-      var itemEntries = String(bins[kIdx][3] || '').trim().split(/\s+/).filter(Boolean);
-      var binCenterX = marginL + kIdx * curBinW + curBinW / 2;
+    for (var colIdx = 0; colIdx < gridX.length; colIdx++) {
+      var colRows = columnOf[colIdx];
+      var colX = gridX[colIdx];
+      var boxL = colX - LABEL_BOX_W / 2;
+      var boxR = colX + LABEL_BOX_W / 2;
 
-      for (var eIdx = 0; eIdx < itemEntries.length; eIdx++) {
-        var entryNum = parseInt(itemEntries[eIdx], 10);
-        if (isNaN(entryNum)) continue;
-
+      for (var rowIdx = 0; rowIdx < colRows.length; rowIdx++) {
+        var rowItem = colRows[rowIdx];
+        var entryNum = rowItem.entry;
         var alias = formatEntryAlias(entryNum);
         var itemRow = itemsByEntry.get(entryNum);
         var infitVal = itemRow ? parseFloat(itemRow[5]) : NaN;
         var isMisfit = !isNaN(infitVal) && infitVal >= 1.5;
-        var itemY = axisY + 54 + eIdx * itemRowHeight;
+        var itemY = axisY + ITEM_TOP + rowIdx * itemRowHeight;
 
         var gClass = 'wright-item-tick' + (isMisfit ? ' is-misfit' : '') + (isMisfit && isMisfitChecked ? ' is-misfit-highlight' : '');
         var g = svgEl('g', {
           class: gClass, tabindex: '0', role: 'button',
-          'data-entry': entryNum, 'data-item': entryNum,
-          'aria-label': 'Butir ' + alias + ', ukuran ' + (itemRow ? itemRow[3] : bins[kIdx][0]) + ' logit'
+          'data-entry': entryNum, 'data-item': entryNum, 'data-bin-x': rowItem.binX,
+          'aria-label': 'Butir ' + alias + ', ukuran ' + (itemRow ? itemRow[3] : rowItem.measure) + ' logit'
         });
 
+        // The item's real position on the logit scale. A label may sit off that position only
+        // while its own box still covers it (offset <= half a box); past that the box would claim
+        // a position the item does not have, so a leader line tethers it to the exact x.
+        var halfBox = (colX - boxL) - 0.5;
+        var leaderFrom = 0, leaderTo = 0;
+        if (rowItem.binX < colX - halfBox) { leaderFrom = rowItem.binX; leaderTo = boxL; }
+        else if (rowItem.binX > colX + halfBox) { leaderFrom = boxR; leaderTo = rowItem.binX; }
+        if (leaderTo - leaderFrom > 0) {
+          g.appendChild(svgEl('line', {
+            x1: leaderFrom, y1: itemY - 4, x2: leaderTo, y2: itemY - 4,
+            class: 'label-leader', stroke: 'var(--line)', 'stroke-width': '1',
+            'stroke-dasharray': 'none', 'vector-effect': 'non-scaling-stroke'
+          }));
+        }
+
         g.appendChild(svgEl('line', {
-          x1: binCenterX - 14, y1: itemY, x2: binCenterX - 10, y2: itemY, class: 'tick-mark',
+          x1: boxL - 4, y1: itemY, x2: boxL, y2: itemY, class: 'tick-mark',
           stroke: isMisfit ? 'var(--warn)' : 'var(--control)', 'stroke-width': '1', 'vector-effect': 'non-scaling-stroke'
         }));
         g.appendChild(svgEl('rect', {
-          class: 'focus-ring', x: binCenterX - 16, y: itemY - 11, width: 38, height: 15,
+          class: 'focus-ring', x: boxL, y: itemY - 11, width: LABEL_BOX_W, height: 15,
           fill: 'none', stroke: 'none', rx: 2
         }));
         g.appendChild(svgEl('rect', {
-          x: binCenterX - 16, y: itemY - 11, width: 38, height: 15, fill: 'none', 'pointer-events': 'all'
+          x: boxL, y: itemY - 11, width: LABEL_BOX_W, height: 15, fill: 'none', 'pointer-events': 'all'
         }));
         g.appendChild(svgEl('text', {
-          x: binCenterX + 2, y: itemY, 'text-anchor': 'middle',
+          x: colX, y: itemY, 'text-anchor': 'middle',
           'font-family': "'IBM Plex Mono', ui-monospace, monospace", 'font-size': '11',
           fill: isMisfit ? 'var(--warn)' : 'var(--ink)'
         }, alias));
@@ -313,7 +385,8 @@
     var svg = svgEl('svg', {
       role: 'img',
       'aria-label': 'Histogram distribusi partisipan: rentang ' + minM.toFixed(2) + ' hingga ' + maxM.toFixed(2) + ' logit, ' + totalPersons + ' partisipan non-ekstrem, lebar bin ' + stepStr + ' logit',
-      viewBox: '0 0 ' + svgWidth + ' ' + svgHeight, width: '100%', height: svgHeight, style: 'display: block;'
+      viewBox: '0 0 ' + svgWidth + ' ' + svgHeight, width: '100%', height: svgHeight,
+      style: 'min-width: ' + svgWidth + 'px; height: auto; display: block;'
     });
     svg.appendChild(svgEl('title', null, 'Histogram Sebaran Partisipan (rentang ' + minM.toFixed(2) + ' sampai ' + maxM.toFixed(2) + ' logit)'));
     svg.appendChild(svgEl('text', {
@@ -439,7 +512,8 @@
     var svg = svgEl('svg', {
       role: 'img',
       'aria-label': 'Grafik selisih butir ' + fromLabel + ' ke ' + toLabel + ': ' + pairs.length + ' butir, rentang selisih dari ' + (minDelta >= 0 ? '+' : '') + minDelta.toFixed(2) + ' hingga ' + (maxDelta >= 0 ? '+' : '') + maxDelta.toFixed(2) + ' logit',
-      viewBox: '0 0 ' + svgWidth + ' ' + svgHeight, width: '100%', height: svgHeight, style: 'display: block;'
+      viewBox: '0 0 ' + svgWidth + ' ' + svgHeight, width: '100%', height: svgHeight,
+      style: 'min-width: ' + svgWidth + 'px; height: auto; display: block;'
     });
     svg.appendChild(svgEl('title', null, 'Perbandingan Selisih Butir (' + fromLabel + ' ke ' + toLabel + ')'));
 

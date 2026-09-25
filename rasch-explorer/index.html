@@ -455,6 +455,13 @@
       }
     }
 
+    /* Chart text follows the pinned micro label (12px) and cannot shrink below it: the SVG keeps a
+       1:1 minimum width and scrolls inside its box instead. */
+    #wright-scale svg text,
+    #cmp-chart svg text {
+      font-size: 12px;
+    }
+
     .wright-scale-box {
       background-color: var(--surface);
       border: 1px solid var(--line);
@@ -698,7 +705,7 @@
     .cmp-chart-scroll {
       max-height: 480px;
       overflow-y: auto;
-      overflow-x: hidden;
+      overflow-x: auto;
     }
 
     .row-detail .data-table {
