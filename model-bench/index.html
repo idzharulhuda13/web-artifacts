@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Bench</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%20width%3D%2732%27%20height%3D%2732%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%276%27%20fill%3D%27%2314181D%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%276%27%20width%3D%2720%27%20height%3D%274%27%20rx%3D%272%27%20fill%3D%27%23A8620A%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%2714%27%20width%3D%2720%27%20height%3D%274%27%20rx%3D%272%27%20fill%3D%27%230C6C68%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%2722%27%20width%3D%2720%27%20height%3D%274%27%20rx%3D%272%27%20fill%3D%27%233B4CC0%27%2F%3E%3C%2Fsvg%3E">
+  <style>
+    @font-face {
+      font-family: 'Archivo';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('../assets/fonts/Archivo-400.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Archivo';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('../assets/fonts/Archivo-600.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Archivo Black';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('../assets/fonts/ArchivoBlack.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('../assets/fonts/IBMPlexMono-400.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('../assets/fonts/IBMPlexMono-500.woff2') format('woff2');
+    }
+
+    :root {
+      --paper: #F1F4F7;
+      --surface: #FCFDFE;
+      --surface-2: #E4E9EF;
+      --ink: #14181D;
+      --muted: #576470;
+      --line: #CDD6DF;
+      --control: #7C8A97;
+      --accent: #7A2E52;
+      --accent-soft: #F3E3EC;
+      --mimo: #A8620A;
+      --deepseek: #0C6C68;
+      --luna: #3B4CC0;
+      --mimo-soft: #F6E7D2;
+      --deepseek-soft: #DCEFEC;
+      --luna-soft: #E3E7FB;
+    }
+
+    html[data-theme=dark] {
+      --paper: #0D1116;
+      --surface: #141A21;
+      --surface-2: #1D242D;
+      --ink: #E9EEF4;
+      --muted: #A2AEBB;
+      --line: #2A343E;
+      --control: #5A6773;
+      --accent: #E9A0C6;
+      --accent-soft: #33202B;
+      --mimo: #E7A84F;
+      --deepseek: #57CFC7;
+      --luna: #93A5FF;
+      --mimo-soft: #2E2517;
+      --deepseek-soft: #12302E;
+      --luna-soft: #1C2038;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Archivo', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 24px clamp(16px, 4vw, 48px);
+    }
+
+    header, main, footer {
+      max-width: 1440px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 24px;
+    }
+
+    footer {
+      padding: 32px 0 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    h1, h2, h3, .display {
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .display {
+      font-size: 34px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 21px;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 15px;
+    }
+
+    .secondary, #provenance, figcaption {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .micro-label {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .numeral, .identifier, code {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 120ms ease;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    button, #back-link {
+      min-height: 44px;
+      min-width: 44px;
+      border: 1px solid var(--control);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 8px 12px;
+      font-family: 'Archivo', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+    }
+
+    button:hover, #back-link:hover {
+      border-color: var(--accent);
+    }
+
+    button[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    #metric-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    #strip-mount {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .lane-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 10px;
+      row-gap: 6px;
+      align-items: center;
+    }
+
+    .lane-name {
+      grid-column: 1 / -1;
+      font-family: 'Archivo Black', system-ui, sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .lane-track {
+      grid-column: 1;
+      min-width: 0;
+      background: var(--surface-2);
+      border-radius: 4px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+    }
+
+    .lane-fill {
+      height: 100%;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .lane-fill-mimo {
+      background: var(--mimo);
+    }
+
+    .lane-fill-deepseek {
+      background: var(--deepseek);
+    }
+
+    .lane-fill-luna {
+      background: var(--luna);
+    }
+
+    .lane-val {
+      grid-column: 2;
+      justify-self: start;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      color: var(--ink);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lead-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Archivo', system-ui, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-left: 6px;
+    }
+
+    .lead-square {
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      display: inline-block;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+    }
+
+    tr {
+      border-bottom: 1px solid var(--line);
+    }
+
+    th, td {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    td:first-child, th:first-child {
+      text-align: left;
+      color: var(--muted);
+    }
+
+    td.num, th.num, td:not(:first-child) {
+      text-align: right;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stacked-dl {
+      display: none;
+    }
+
+    dl.stacked-dl dt {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    dl.stacked-dl dd {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 15px;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    figure, .chart-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    figcaption {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    #bench-error {
+      background: var(--surface);
+      border: 1px solid var(--control);
+      border-radius: 6px;
+      padding: 24px;
+      max-width: 600px;
+      margin: 24px auto;
+    }
+
+    #bench-error[hidden] {
+      display: none;
+    }
+
+    #bench-error h2 {
+      font-size: 21px;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    #bench-error p {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 719px) {
+      .display {
+        font-size: 26px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      h2 {
+        font-size: 19px;
+      }
+
+      h3 {
+        font-size: 16px;
+      }
+
+      #spec-table, .spec-table-wrap {
+        display: none;
+      }
+
+      .stacked-dl {
+        display: block;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      body {
+        padding: 16px 12px;
+      }
+
+      #latency-chart {
+        overflow-x: auto;
+      }
+
+      #latency-chart svg {
+        min-width: 760px;
+      }
+
+      .table-wrap th,
+      .table-wrap td {
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <noscript><p>This page needs JavaScript to render its measurements.</p></noscript>
+  <header>
+    <h1>Model Bench</h1>
+    <button id="theme-toggle" aria-pressed="false">Dark theme</button>
+    <a id="back-link" href="../">Back to shelf</a>
+  </header>
+  <main>
+    <section id="s-verdict">
+      <h2>Verdict</h2>
+      <p id="provenance"></p>
+      <figure id="lane-strip-top">
+        <div id="strip-mount"></div>
+      </figure>
+      <div id="metric-group" role="group" aria-label="Lane strip metric">
+        <button id="metric-speed" aria-pressed="true">Speed</button>
+        <button id="metric-cache" aria-pressed="false">Cache hit rate</button>
+        <button id="metric-ctx" aria-pressed="false">Context window</button>
+      </div>
+      <p class="secondary" id="strip-note">
+        The strip reads speed and cache hit rate over every call this box has recorded for each model, which is a
+        wider population than the timings below: the latency table reads its cache figure over the calls whose
+        timing is known, so the two cache numbers differ on purpose.
+      </p>
+    </section>
+    <section id="s-spec">
+      <h2>Identity and limits</h2>
+      <div class="mount"></div>
+    </section>
+    <section id="s-latency">
+      <h2>Measured latency</h2>
+      <figure id="latency-chart"></figure>
+      <div class="mount-2"></div>
+    </section>
+    <section id="s-probe">
+      <h2>Head-to-head probe</h2>
+      <div class="mount"></div>
+    </section>
+    <section id="s-cost">
+      <h2>Cost of one real job</h2>
+      <div id="cost-grid"></div>
+      <div class="mount-2"></div>
+    </section>
+    <section id="s-roles">
+      <h2>Which role runs which model</h2>
+      <div class="mount"></div>
+      <ul id="role-map"></ul>
+    </section>
+    <section id="s-caveats">
+      <h2>What this does not prove</h2>
+      <ul id="caveats"></ul>
+    </section>
+  </main>
+  <footer id="page-foot"></footer>
+  <div id="bench-error" role="alert" hidden>
+    <h2>Measurements not loaded</h2>
+    <p>The module model-bench/data.js failed to load.</p>
+  </div>
+  <script src="data.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const D = window.MODEL_BENCH;
+      if (!D) {
+        const err = document.getElementById('bench-error');
+        if (err) err.removeAttribute('hidden');
+        const main = document.querySelector('main');
+        if (main) main.setAttribute('hidden', '');
+        return;
+      }
+
+      function missing(v) {
+        if (Array.isArray(v) && v.length === 0) return 'no data';
+        if (v === null || v === undefined) return 'not published';
+        return String(v);
+      }
+
+      function fmtInt(v) {
+        if (v === null || v === undefined) return missing(v);
+        return Math.round(Number(v)).toLocaleString('en-US');
+      }
+
+      function fmt1(v) {
+        if (v === null || v === undefined) return missing(v);
+        return Number(v).toFixed(1);
+      }
+
+      function fmtSec(v) {
+        if (v === null || v === undefined) return missing(v);
+        return fmt1(v) + ' s';
+      }
+
+      function fmtPct(v) {
+        if (v === null || v === undefined) return missing(v);
+        return fmt1(v) + '%';
+      }
+
+      function fmtUsd(v) {
+        if (v === null || v === undefined) return missing(v);
+        const n = Number(v);
+        let s = n.toFixed(6);
+        while (s.endsWith('0') && s.split('.')[1].length > 2) {
+          s = s.slice(0, -1);
+        }
+        return '$' + s;
+      }
+
+      const MODELS = D.models;
+
+      const METRICS = {
+        speed: {
+          label: 'Median speed',
+          unit: 'tok/s',
+          read: (m) => (m.our_latency ? m.our_latency.tok_per_s_median : null),
+          format: fmt1
+        },
+        cache: {
+          label: 'Cache hit rate, usage-wide',
+          unit: '%',
+          read: (m) => (m.our_usage ? m.our_usage.cache_hit_pct : null),
+          format: fmt1
+        },
+        ctx: {
+          label: 'Context window',
+          unit: 'tokens',
+          read: (m) => m.context_tokens,
+          format: fmtInt
+        }
+      };
+
+      let currentMetric = 'speed';
+
+      function buildStrip(metricKey) {
+        const metric = METRICS[metricKey];
+        const frag = document.createDocumentFragment();
+        if (!metric) return frag;
+
+        const values = MODELS.map((m) => {
+          const raw = metric.read(m);
+          return typeof raw === 'number' && !isNaN(raw) ? raw : null;
+        });
+
+        const validNumbers = values.filter((v) => v !== null);
+        const maxVal = validNumbers.length > 0 ? Math.max(...validNumbers) : 0;
+
+        MODELS.forEach((m, idx) => {
+          const val = values[idx];
+          const isLead = val !== null && maxVal > 0 && val === maxVal;
+
+          let widthPct = 2;
+          if (val !== null && maxVal > 0) {
+            widthPct = Math.max(2, (val / maxVal) * 100);
+          }
+
+          const formattedVal = val !== null ? metric.format(val) : missing(val);
+          const printedValue = val !== null ? `${formattedVal} ${metric.unit}` : formattedVal;
+
+          const laneDiv = document.createElement('div');
+          laneDiv.className = 'lane-row';
+          laneDiv.setAttribute('role', 'img');
+          laneDiv.setAttribute('aria-label', `${m.short}, ${metric.label}: ${printedValue}${isLead ? ', lead' : ''}`);
+
+          const nameEl = document.createElement('div');
+          nameEl.className = 'lane-name';
+          nameEl.textContent = m.short;
+
+          const trackEl = document.createElement('div');
+          trackEl.className = 'lane-track';
+
+          const fillEl = document.createElement('div');
+          let colorClass = 'lane-fill-mimo';
+          if (m.slug && m.slug.indexOf('deepseek') !== -1) {
+            colorClass = 'lane-fill-deepseek';
+          } else if (m.slug && m.slug.indexOf('luna') !== -1) {
+            colorClass = 'lane-fill-luna';
+          }
+          fillEl.className = `lane-fill ${colorClass}`;
+          fillEl.style.width = widthPct.toFixed(1) + '%';
+
+          const valEl = document.createElement('div');
+          valEl.className = 'lane-val';
+          valEl.setAttribute("data-role", 'strip-value');
+          valEl.textContent = printedValue;
+
+          if (isLead) {
+            const leadBadge = document.createElement('span');
+            leadBadge.className = 'lead-badge';
+
+            const sq = document.createElement('span');
+            sq.className = 'lead-square';
+            sq.setAttribute('aria-hidden', 'true');
+
+            leadBadge.appendChild(sq);
+            leadBadge.appendChild(document.createTextNode('LEAD'));
+            valEl.appendChild(leadBadge);
+          }
+
+          trackEl.appendChild(fillEl);
+
+          laneDiv.appendChild(nameEl);
+          laneDiv.appendChild(trackEl);
+          laneDiv.appendChild(valEl);
+
+          frag.appendChild(laneDiv);
+        });
+
+        return frag;
+      }
+
+      function renderStrip() {
+        const mount = document.getElementById('strip-mount');
+        if (!mount) return;
+        mount.replaceChildren(buildStrip(currentMetric));
+      }
+
+      function renderVerdict() {
+        const prov = document.getElementById('provenance');
+        if (prov) {
+          const modelCount = fmtInt(MODELS.length);
+          const workloadCount = fmtInt(D.workloads ? D.workloads.length : 0);
+          const timedCalls = fmtInt(
+            MODELS.reduce((acc, m) => acc + (m.our_latency && m.our_latency.calls ? m.our_latency.calls : 0), 0)
+          );
+          const recordedCalls = fmtInt(
+            MODELS.reduce((acc, m) => acc + (m.our_usage && m.our_usage.api_calls ? m.our_usage.api_calls : 0), 0)
+          );
+          prov.textContent = `Benchmarked on ${D.bench_method.date} via relay ${D.relay} across ${modelCount} models and ${workloadCount} workloads, with timings from ${timedCalls} of the ${recordedCalls} API calls this box recorded.`;
+        }
+        renderStrip();
+      }
+
+      function renderSpec() {
+        const mount = document.querySelector('#s-spec .mount');
+        if (!mount || !D || !MODELS) return;
+
+        const rows = [
+          {
+            label: 'Relay endpoint',
+            get: (m) => (m.our_usage && m.our_usage.model ? String(m.our_usage.model).toLowerCase() : missing(null))
+          },
+          {
+            label: 'Context window',
+            get: (m) => fmtInt(m.context_tokens) + ' tokens'
+          },
+          {
+            label: 'Max output',
+            get: (m) => fmtInt(m.max_output_tokens) + ' tokens'
+          },
+          {
+            label: 'Input',
+            get: (m) => fmtUsd(m.price ? m.price.input : null, 2, 4) + ' / 1M tokens'
+          },
+          {
+            label: 'Output',
+            get: (m) => fmtUsd(m.price ? m.price.output : null, 2, 4) + ' / 1M tokens'
+          },
+          {
+            label: 'Cache read',
+            get: (m) => fmtUsd(m.price ? m.price.cache_read : null, 2, 4) + ' / 1M tokens'
+          },
+          {
+            label: 'Cache write',
+            get: (m) => (m.price && m.price.cache_write !== null && m.price.cache_write !== undefined)
+              ? fmtUsd(m.price.cache_write, 2, 4) + ' / 1M tokens'
+              : 'not charged'
+          },
+          {
+            label: 'Peak surcharge',
+            get: (m) => (!m.peak_multiplier ? 'no peak surcharge' : 'doubles ' + m.peak_window_wib)
+          },
+          {
+            label: 'Long context',
+            get: (m) => (!m.long_context_band ? 'flat rates' : 'doubles above ' + fmtInt(m.long_context_band.above_tokens) + ' tokens')
+          },
+          {
+            label: 'Vendor score',
+            vendor: true,
+            get: (m) => (m.published && m.published.intelligence_index !== null && m.published.intelligence_index !== undefined)
+              ? 'vendor score: ' + fmt1(m.published.intelligence_index)
+              : (m.published_note || missing(null))
+          },
+          {
+            label: 'Vendor speed',
+            vendor: true,
+            get: (m) => (m.published && m.published.output_speed_tok_s !== null && m.published.output_speed_tok_s !== undefined)
+              ? fmt1(m.published.output_speed_tok_s) + ' tok/s, self-reported'
+              : 'not published'
+          },
+          {
+            label: 'Agent-loop cost',
+            vendor: true,
+            get: (m) => fmtUsd(m.published ? m.published.agent_loop_cost_per_m_in : null, 2, 4) + ' per 1M input tokens'
+          }
+        ];
+
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'table-wrap spec-table-wrap';
+
+        const table = document.createElement('table');
+        table.id = 'spec-table';
+
+        const caption = document.createElement('caption');
+        caption.textContent = "Published facts are the vendor's or the relay's own numbers, not measurements made here.";
+        table.appendChild(caption);
+
+        const thead = document.createElement('thead');
+        const headerTr = document.createElement('tr');
+        const emptyTh = document.createElement('th');
+        emptyTh.setAttribute('scope', 'col');
+        headerTr.appendChild(emptyTh);
+
+        MODELS.forEach((m) => {
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'col');
+          const nameDiv = document.createElement('div');
+          nameDiv.textContent = m.short;
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'secondary micro-label';
+          metaDiv.textContent = m.vendor + ', ' + m.released;
+          th.appendChild(nameDiv);
+          th.appendChild(metaDiv);
+          headerTr.appendChild(th);
+        });
+        thead.appendChild(headerTr);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        rows.forEach((r) => {
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'row');
+          th.textContent = r.label;
+          tr.appendChild(th);
+
+          MODELS.forEach((m) => {
+            const td = document.createElement('td');
+            if (r.vendor) {
+              td.className = 'vendor-value';
+            }
+            td.textContent = r.get(m);
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+
+        const specStack = document.createElement('div');
+        specStack.className = 'spec-stack stacked-dl';
+
+        MODELS.forEach((m) => {
+          const block = document.createElement('div');
+          const h3 = document.createElement('h3');
+          h3.textContent = m.short;
+          block.appendChild(h3);
+
+          const dl = document.createElement('dl');
+          dl.className = 'stacked-dl';
+          rows.forEach((r) => {
+            const dt = document.createElement('dt');
+            dt.textContent = r.label;
+            const dd = document.createElement('dd');
+            if (r.vendor) {
+              dd.className = 'vendor-value';
+            }
+            dd.textContent = r.get(m);
+            dl.appendChild(dt);
+            dl.appendChild(dd);
+          });
+          block.appendChild(dl);
+          specStack.appendChild(block);
+        });
+
+        mount.replaceChildren(tableWrap, specStack);
+      }
+      function renderLatency() {
+        const chartFig = document.getElementById('latency-chart');
+        const mount2 = document.querySelector('#s-latency .mount-2');
+        if (!chartFig || !mount2 || !D || !MODELS) return;
+
+        const p99Values = MODELS.map((m) => (m.our_latency ? m.our_latency.lat_p99_s : 0));
+        const maxP99 = Math.max(...p99Values);
+        const xMax = Math.ceil(maxP99 * 1.1);
+
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', 'Measured latency range from median to p99 per model');
+        svg.setAttribute('viewBox', '0 0 780 170');
+        svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
+        svg.style.width = '100%';
+        svg.style.height = 'auto';
+        svg.style.display = 'block';
+
+        const title = document.createElementNS(svgNS, 'title');
+        title.textContent = 'Measured latency range from median to p99 per model';
+        svg.appendChild(title);
+
+        const chartX0 = 190;
+        const chartX1 = 750;
+        const chartWidth = chartX1 - chartX0;
+        const rowHeight = 36;
+        const startY = 28;
+        const gutterRight = chartX0 - 15;
+
+        MODELS.forEach((m, idx) => {
+          const lat = m.our_latency;
+          const rowY = startY + idx * rowHeight;
+
+          let modelColor = 'var(--mimo)';
+          let colorClass = 'lane-fill-mimo';
+          if (m.slug && m.slug.indexOf('deepseek') !== -1) {
+            modelColor = 'var(--deepseek)';
+            colorClass = 'lane-fill-deepseek';
+          } else if (m.slug && m.slug.indexOf('luna') !== -1) {
+            modelColor = 'var(--luna)';
+            colorClass = 'lane-fill-luna';
+          }
+
+          const rowG = document.createElementNS(svgNS, 'g');
+          rowG.setAttribute('class', colorClass);
+
+          const nameText = document.createElementNS(svgNS, 'text');
+          nameText.setAttribute('x', String(gutterRight));
+          nameText.setAttribute('y', String(rowY));
+          nameText.setAttribute('font-family', "'Archivo', system-ui, sans-serif");
+          nameText.setAttribute('font-size', '13');
+          nameText.setAttribute('font-weight', '600');
+          nameText.setAttribute('fill', 'var(--ink)');
+          nameText.setAttribute('text-anchor', 'end');
+          nameText.setAttribute('dominant-baseline', 'middle');
+          nameText.textContent = m.short;
+          svg.appendChild(nameText);
+
+          const hasVal = lat && typeof lat.lat_median_s === 'number' && !isNaN(lat.lat_median_s);
+
+          if (hasVal) {
+            const medX = chartX0 + (lat.lat_median_s / xMax) * chartWidth;
+            const p90X = chartX0 + (lat.lat_p90_s / xMax) * chartWidth;
+            const p99X = chartX0 + (lat.lat_p99_s / xMax) * chartWidth;
+
+            const track = document.createElementNS(svgNS, 'line');
+            track.setAttribute('x1', String(medX));
+            track.setAttribute('y1', String(rowY));
+            track.setAttribute('x2', String(p99X));
+            track.setAttribute('y2', String(rowY));
+            track.setAttribute('stroke', modelColor);
+            track.setAttribute('stroke-width', '2');
+            rowG.appendChild(track);
+
+            const dot = document.createElementNS(svgNS, 'circle');
+            dot.setAttribute('cx', String(medX));
+            dot.setAttribute('cy', String(rowY));
+            dot.setAttribute('r', '4');
+            dot.setAttribute('fill', modelColor);
+            rowG.appendChild(dot);
+
+            const p90Tick = document.createElementNS(svgNS, 'line');
+            p90Tick.setAttribute('x1', String(p90X));
+            p90Tick.setAttribute('y1', String(rowY - 5));
+            p90Tick.setAttribute('x2', String(p90X));
+            p90Tick.setAttribute('y2', String(rowY + 5));
+            p90Tick.setAttribute('stroke', modelColor);
+            p90Tick.setAttribute('stroke-width', '2');
+            rowG.appendChild(p90Tick);
+
+            const p99Marker = document.createElementNS(svgNS, 'rect');
+            p99Marker.setAttribute('x', String(p99X - 3.5));
+            p99Marker.setAttribute('y', String(rowY - 3.5));
+            p99Marker.setAttribute('width', '7');
+            p99Marker.setAttribute('height', '7');
+            p99Marker.setAttribute('fill', modelColor);
+            rowG.appendChild(p99Marker);
+          }
+
+          const medText = document.createElementNS(svgNS, 'text');
+          medText.setAttribute('x', String(chartX1));
+          medText.setAttribute('y', String(rowY));
+          medText.setAttribute('font-family', "'IBM Plex Mono', ui-monospace, monospace");
+          medText.setAttribute('font-size', '11');
+          medText.setAttribute('fill', 'var(--ink)');
+          medText.setAttribute('text-anchor', 'end');
+          medText.setAttribute('dominant-baseline', 'middle');
+          medText.textContent = hasVal ? fmtSec(lat.lat_median_s) : missing(null);
+          svg.appendChild(medText);
+
+          svg.appendChild(rowG);
+        });
+
+        const axisY = startY + MODELS.length * rowHeight + 4;
+        const baseline = document.createElementNS(svgNS, 'line');
+        baseline.setAttribute('x1', String(chartX0));
+        baseline.setAttribute('y1', String(axisY));
+        baseline.setAttribute('x2', String(chartX1));
+        baseline.setAttribute('y2', String(axisY));
+        baseline.setAttribute('stroke', 'var(--line)');
+        baseline.setAttribute('stroke-width', '1');
+        svg.appendChild(baseline);
+
+        const ticks = [0, xMax / 2, xMax];
+        ticks.forEach((t) => {
+          const tx = chartX0 + (t / xMax) * chartWidth;
+          const tickLine = document.createElementNS(svgNS, 'line');
+          tickLine.setAttribute('x1', String(tx));
+          tickLine.setAttribute('y1', String(axisY));
+          tickLine.setAttribute('x2', String(tx));
+          tickLine.setAttribute('y2', String(axisY + 4));
+          tickLine.setAttribute('stroke', 'var(--line)');
+          tickLine.setAttribute('stroke-width', '1');
+          svg.appendChild(tickLine);
+
+          const tickText = document.createElementNS(svgNS, 'text');
+          tickText.setAttribute('x', String(tx));
+          tickText.setAttribute('y', String(axisY + 16));
+          tickText.setAttribute('font-family', "'IBM Plex Mono', ui-monospace, monospace");
+          tickText.setAttribute('font-size', '11');
+          tickText.setAttribute('fill', 'var(--muted)');
+          tickText.setAttribute('text-anchor', 'middle');
+          tickText.textContent = fmt1(t) + ' s';
+          svg.appendChild(tickText);
+        });
+
+        const totalCalls = MODELS.reduce(
+          (acc, m) => acc + (m.our_latency && m.our_latency.calls ? m.our_latency.calls : 0),
+          0
+        );
+
+        const figcaption = document.createElement('figcaption');
+        figcaption.textContent =
+          'Median to p99 wall-clock seconds per call, self-timed by the client that made the call. ' +
+          fmtInt(totalCalls) +
+          " calls recorded in this box's agent log.";
+
+        chartFig.replaceChildren(svg, figcaption);
+
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'table-wrap';
+
+        const table = document.createElement('table');
+
+        const thead = document.createElement('thead');
+        const headerTr = document.createElement('tr');
+        const emptyTh = document.createElement('th');
+        emptyTh.setAttribute('scope', 'col');
+        headerTr.appendChild(emptyTh);
+
+        MODELS.forEach((m) => {
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'col');
+          th.textContent = m.short;
+          headerTr.appendChild(th);
+        });
+        thead.appendChild(headerTr);
+        table.appendChild(thead);
+
+        const tableRows = [
+          {
+            label: 'Calls',
+            get: (m) => (m.our_latency && m.our_latency.calls !== undefined && m.our_latency.calls !== null ? fmtInt(m.our_latency.calls) : missing(null))
+          },
+          {
+            label: 'Median',
+            get: (m) => (m.our_latency && m.our_latency.lat_median_s !== undefined && m.our_latency.lat_median_s !== null ? fmtSec(m.our_latency.lat_median_s) : missing(null))
+          },
+          {
+            label: 'p90',
+            get: (m) => (m.our_latency && m.our_latency.lat_p90_s !== undefined && m.our_latency.lat_p90_s !== null ? fmtSec(m.our_latency.lat_p90_s) : missing(null))
+          },
+          {
+            label: 'p99',
+            get: (m) => (m.our_latency && m.our_latency.lat_p99_s !== undefined && m.our_latency.lat_p99_s !== null ? fmtSec(m.our_latency.lat_p99_s) : missing(null))
+          },
+          {
+            label: 'Worst',
+            get: (m) => (m.our_latency && m.our_latency.lat_max_s !== undefined && m.our_latency.lat_max_s !== null ? fmtSec(m.our_latency.lat_max_s) : missing(null))
+          },
+          {
+            label: 'Throughput',
+            get: (m) => (m.our_latency && m.our_latency.tok_per_s_median !== undefined && m.our_latency.tok_per_s_median !== null ? fmt1(m.our_latency.tok_per_s_median) + ' tok/s' : missing(null))
+          },
+          {
+            label: 'Median prompt',
+            get: (m) => (m.our_latency && m.our_latency.in_median !== undefined && m.our_latency.in_median !== null ? fmtInt(m.our_latency.in_median) + ' tokens' : missing(null))
+          },
+          {
+            label: 'Median output',
+            get: (m) => (m.our_latency && m.our_latency.out_median !== undefined && m.our_latency.out_median !== null ? fmtInt(m.our_latency.out_median) + ' tokens' : missing(null))
+          },
+          {
+            label: 'Cache hit rate, timed calls',
+            get: (m) => (m.our_latency && m.our_latency.cache_hit_pct !== undefined && m.our_latency.cache_hit_pct !== null ? fmtPct(m.our_latency.cache_hit_pct) : missing(null))
+          }
+        ];
+
+        const tbody = document.createElement('tbody');
+        tableRows.forEach((r) => {
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'row');
+          th.textContent = r.label;
+          tr.appendChild(th);
+
+          MODELS.forEach((m) => {
+            const td = document.createElement('td');
+            td.textContent = r.get(m);
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+
+        const noteP = document.createElement('p');
+        noteP.className = 'secondary';
+        noteP.textContent =
+          'Timings come from the client, so they include queueing and network, and the three models were not run in isolation from each other. ' +
+          'The cache figure in the lane strip is computed over every call this box ever recorded for that model, while the figure in this table is computed only over the calls whose timing is known, so the two numbers differ on purpose and describe two different populations.';
+
+        mount2.replaceChildren(tableWrap, noteP);
+      }
+      function renderProbe() {
+        const mount = document.querySelector('#s-probe .mount');
+        if (!mount || !D || !MODELS) return;
+
+        if (!document.getElementById('probe-matrix-style')) {
+          const styleEl = document.createElement('style');
+          styleEl.id = 'probe-matrix-style';
+          styleEl.textContent = '.verdict-good, .good { color: var(--ink); }\n.verdict-partial, .partial { color: var(--muted); }\n.verdict-failure, .failure { color: var(--accent); }';
+          document.head.appendChild(styleEl);
+        }
+
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'table-wrap';
+
+        const table = document.createElement('table');
+        table.id = 'probe-matrix';
+
+        const caption = document.createElement('caption');
+        const benchDate = D.bench_method && D.bench_method.date ? D.bench_method.date : '2026-09-27';
+        caption.textContent = 'Identical frozen prompts, one model at a time, one relay, on ' + benchDate + '.';
+        table.appendChild(caption);
+
+        const thead = document.createElement('thead');
+        const headerTr = document.createElement('tr');
+        const emptyTh = document.createElement('th');
+        emptyTh.setAttribute('scope', 'col');
+        headerTr.appendChild(emptyTh);
+
+        MODELS.forEach((m) => {
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'col');
+          th.textContent = m.short;
+          headerTr.appendChild(th);
+        });
+        thead.appendChild(headerTr);
+        table.appendChild(thead);
+
+        const rows = [
+          {
+            label: 'One-word answer',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const ping = m.bench ? m.bench.ping : null;
+              const resp = ping && typeof ping.resp === 'string' ? ping.resp.trim() : '';
+              const ok = ping && ping.ok;
+              const word = resp !== '' ? 'answered' : (ok ? 'empty reply' : 'failed');
+              const outcome = word === 'answered' ? 'verdict-good good' : (word === 'empty reply' ? 'verdict-partial partial' : 'verdict-failure failure');
+              return { word, outcome, wall_s: ping ? ping.wall_s : null };
+            }
+          },
+          {
+            label: 'Plan shape, short cap',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const secObj = m.bench ? m.bench.sections : null;
+              const n = secObj && typeof secObj.sections === 'number' ? secObj.sections : 0;
+              const word = n > 0 ? n + ' sections' : 'no headings';
+              const outcome = n > 0 ? 'verdict-good good' : 'verdict-partial partial';
+              return { word, outcome, wall_s: secObj ? secObj.wall_s : null };
+            }
+          },
+          {
+            label: 'Plan shape, long cap',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const secObj = m.bench_4000;
+              const n = secObj && typeof secObj.sections === 'number' ? secObj.sections : 0;
+              const word = n > 0 ? n + ' sections' : 'no headings';
+              const outcome = n > 0 ? 'verdict-good good' : 'verdict-partial partial';
+              return { word, outcome, wall_s: secObj ? secObj.wall_s : null };
+            }
+          },
+          {
+            label: 'Six-item arithmetic',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const acc = m.bench ? m.bench.accuracy : null;
+              const word = acc && acc.score ? String(acc.score) : missing(null);
+              const outcome = word === '6/6' ? 'verdict-good good' : (word.startsWith('0/') ? 'verdict-failure failure' : 'verdict-partial partial');
+              return { word, outcome, wall_s: acc ? acc.wall_s : null };
+            }
+          },
+          {
+            label: 'Strict JSON',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const js = m.bench ? m.bench.json : null;
+              const isValid = js && js.valid;
+              const recorded = js && typeof js.valid === 'boolean';
+              const word = recorded ? (isValid ? 'valid' : 'invalid') : missing(null);
+              const outcome = recorded ? (isValid ? 'verdict-good good' : 'verdict-failure failure') : 'verdict-partial partial';
+              return { word, outcome, wall_s: js ? js.wall_s : null };
+            }
+          },
+          {
+            label: 'Needle, first pass',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const lc = m.bench && Array.isArray(m.bench.longctx) ? m.bench.longctx[0] : null;
+              const recorded = lc && typeof lc.needle_hit === 'boolean';
+              const hit = recorded && lc.needle_hit;
+              const word = recorded ? (hit ? 'found' : 'missed') : missing(null);
+              const outcome = recorded ? (hit ? 'verdict-good good' : 'verdict-failure failure') : 'verdict-partial partial';
+              return { word, outcome, wall_s: lc ? lc.wall_s : null };
+            }
+          },
+          {
+            label: 'Needle, repeat pass',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const lc = m.bench && Array.isArray(m.bench.longctx) ? m.bench.longctx[1] : null;
+              const recorded = lc && typeof lc.needle_hit === 'boolean';
+              const hit = recorded && lc.needle_hit;
+              const word = recorded ? (hit ? 'found from cache' : 'missed') : missing(null);
+              const outcome = recorded ? (hit ? 'verdict-good good' : 'verdict-failure failure') : 'verdict-partial partial';
+              return { word, outcome, wall_s: lc ? lc.wall_s : null };
+            }
+          },
+          {
+            label: 'Image card',
+            attr: 'scope="row"',
+            eval: (m) => {
+              const vis = m.bench ? m.bench.vision : null;
+              const codeHit = vis && vis.code_hit === true;
+              const colourHit = vis && vis.colour_hit === true;
+              const recorded = vis && (typeof vis.code_hit === 'boolean' || typeof vis.colour_hit === 'boolean');
+              const word = recorded ? (codeHit && colourHit ? 'read both' : (codeHit || colourHit ? 'partial' : 'failed')) : missing(null);
+              const outcome = recorded ? (codeHit && colourHit ? 'verdict-good good' : (codeHit || colourHit ? 'verdict-partial partial' : 'verdict-failure failure')) : 'verdict-partial partial';
+              return { word, outcome, wall_s: vis ? vis.wall_s : null };
+            }
+          }
+        ];
+
+        const tbody = document.createElement('tbody');
+        rows.forEach((r) => {
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'row');
+          th.textContent = r.label;
+          tr.appendChild(th);
+
+          MODELS.forEach((m) => {
+            const res = r.eval(m);
+            const td = document.createElement('td');
+            td.className = res.outcome;
+
+            const wordDiv = document.createElement('div');
+            wordDiv.textContent = res.word;
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'secondary micro-label';
+            timeDiv.textContent = fmtSec(res.wall_s);
+
+            td.appendChild(wordDiv);
+            td.appendChild(timeDiv);
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+
+        const noteP = document.createElement('p');
+        noteP.className = 'secondary';
+        noteP.textContent =
+          '"empty reply" means the endpoint returned no text at all, and "no headings" means the answer stopped before it produced any section heading, which is what the token cap looks like from the outside.';
+
+        mount.replaceChildren(tableWrap, noteP);
+      }
+      function renderCost() {
+        const costGrid = document.getElementById('cost-grid');
+        const mount2 = document.querySelector('#s-cost .mount-2');
+        if (!costGrid || !mount2 || !D || !MODELS) return;
+
+        function getPeakHours(windowStr) {
+          if (!windowStr) return 0;
+          const matches = [...windowStr.matchAll(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/g)];
+          let totalHours = 0;
+          for (const match of matches) {
+            const start = parseInt(match[1], 10) + parseInt(match[2], 10) / 60;
+            const end = parseInt(match[3], 10) + parseInt(match[4], 10) / 60;
+            totalHours += (end - start);
+          }
+          return totalHours;
+        }
+
+        costGrid.style.display = 'grid';
+        costGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
+        costGrid.style.gap = '16px';
+        costGrid.style.marginBottom = '24px';
+
+        const gridFrag = document.createDocumentFragment();
+        const workloads = D.workloads || [];
+
+        workloads.forEach((w) => {
+          const block = document.createElement('div');
+          block.className = 'chart-panel';
+
+          const h3 = document.createElement('h3');
+          h3.textContent = w.name;
+          block.appendChild(h3);
+
+          const descP = document.createElement('p');
+          descP.className = 'secondary';
+          descP.style.marginBottom = '12px';
+          descP.textContent = `${w.detail}. ${fmtInt(w.in)} prompt tokens, ${fmtInt(w.out)} output tokens, ${fmtPct(w.cache_read_frac * 100)} cache share.`;
+          block.appendChild(descP);
+
+          const modelCosts = MODELS.map((m) => {
+            const modelKey = (m.our_usage && m.our_usage.model) || m.slug;
+            const costObj = w.cost ? w.cost[modelKey] : null;
+            return costObj ? costObj.off_peak : null;
+          });
+          const validCosts = modelCosts.filter((c) => typeof c === 'number' && !isNaN(c));
+          const minCost = validCosts.length > 0 ? Math.min(...validCosts) : null;
+          const maxCost = validCosts.length > 0 ? Math.max(...validCosts) : 0;
+
+          MODELS.forEach((m) => {
+            const modelKey = (m.our_usage && m.our_usage.model) || m.slug;
+            const costObj = w.cost ? w.cost[modelKey] : null;
+            const offPeak = costObj ? costObj.off_peak : null;
+            const peak = costObj ? costObj.peak : null;
+
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'lane-row';
+            rowDiv.style.marginTop = '10px';
+
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'lane-name';
+            nameDiv.textContent = m.short;
+            rowDiv.appendChild(nameDiv);
+
+            const trackDiv = document.createElement('div');
+            trackDiv.className = 'lane-track';
+            trackDiv.setAttribute('aria-hidden', 'true');
+
+            const fillDiv = document.createElement('div');
+            let colorClass = 'lane-fill-mimo';
+            if (m.slug && m.slug.indexOf('deepseek') !== -1) {
+              colorClass = 'lane-fill-deepseek';
+            } else if (m.slug && m.slug.indexOf('luna') !== -1) {
+              colorClass = 'lane-fill-luna';
+            }
+            fillDiv.className = `lane-fill ${colorClass}`;
+
+            let widthPct = 2;
+            if (offPeak !== null && maxCost > 0) {
+              widthPct = Math.max(2, (offPeak / maxCost) * 100);
+            }
+            fillDiv.style.width = widthPct.toFixed(1) + '%';
+            trackDiv.appendChild(fillDiv);
+            rowDiv.appendChild(trackDiv);
+
+            const valDiv = document.createElement('div');
+            valDiv.className = 'lane-val';
+            valDiv.textContent = offPeak !== null ? fmtUsd(offPeak, 4, 6) : missing(null);
+
+            const isCheapest = offPeak !== null && minCost !== null && offPeak === minCost;
+            if (isCheapest) {
+              const badge = document.createElement('span');
+              badge.className = 'lead-badge';
+              badge.textContent = 'cheapest';
+              valDiv.appendChild(document.createTextNode(' '));
+              valDiv.appendChild(badge);
+            }
+            rowDiv.appendChild(valDiv);
+
+            if (peak !== null && peak !== undefined) {
+              const peakDiv = document.createElement('div');
+              peakDiv.className = 'secondary micro-label';
+              peakDiv.style.gridColumn = '1 / -1';
+              let peakText = fmtUsd(peak, 4, 6) + ' peak';
+              if (m.peak_window_wib) {
+                const peakHours = getPeakHours(m.peak_window_wib);
+                if (peakHours > 0) {
+                  peakText += ' (' + fmtInt(peakHours) + ' hours of the day, ' + m.peak_window_wib + ')';
+                } else {
+                  peakText += ' (' + m.peak_window_wib + ')';
+                }
+              }
+              peakDiv.textContent = peakText;
+              rowDiv.appendChild(peakDiv);
+            }
+
+            block.appendChild(rowDiv);
+          });
+
+          const sourceDiv = document.createElement('div');
+          sourceDiv.className = 'secondary micro-label';
+          sourceDiv.style.marginTop = '12px';
+          sourceDiv.textContent = 'shape: ' + w.source;
+          block.appendChild(sourceDiv);
+
+          gridFrag.appendChild(block);
+        });
+
+        costGrid.replaceChildren(gridFrag);
+
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'table-wrap';
+
+        const table = document.createElement('table');
+
+        const thead = document.createElement('thead');
+        const headerTr = document.createElement('tr');
+        const emptyTh = document.createElement('th');
+        emptyTh.setAttribute('scope', 'col');
+        headerTr.appendChild(emptyTh);
+
+        MODELS.forEach((m) => {
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'col');
+          th.textContent = m.short;
+          headerTr.appendChild(th);
+        });
+        thead.appendChild(headerTr);
+        table.appendChild(thead);
+
+        const rows = [
+          {
+            label: 'Calls priced',
+            get: (m) => (m.measured_cost && m.measured_cost.calls !== undefined && m.measured_cost.calls !== null ? fmtInt(m.measured_cost.calls) : missing(null))
+          },
+          {
+            label: 'Per call, off peak',
+            get: (m) => (m.measured_cost && m.measured_cost.per_call_off_peak !== undefined && m.measured_cost.per_call_off_peak !== null ? fmtUsd(m.measured_cost.per_call_off_peak, 4, 6) : missing(null))
+          },
+          {
+            label: 'Per call, peak',
+            get: (m) => (m.measured_cost && m.measured_cost.per_call_peak !== undefined && m.measured_cost.per_call_peak !== null ? fmtUsd(m.measured_cost.per_call_peak, 4, 6) : 'no peak surcharge')
+          },
+          {
+            label: 'Cache write, per call',
+            get: (m) => (m.measured_cost && m.measured_cost.reports_cache_write ? fmtInt(m.measured_cost.cache_write_per_call) + ' tokens' : 'none reported')
+          }
+        ];
+
+        const tbody = document.createElement('tbody');
+        rows.forEach((r) => {
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'row');
+          th.textContent = r.label;
+          tr.appendChild(th);
+
+          MODELS.forEach((m) => {
+            const td = document.createElement('td');
+            td.textContent = r.get(m);
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+
+        const rj = D.reviewer_jobs || {};
+        const noteP = document.createElement('p');
+        noteP.className = 'secondary';
+        noteP.style.marginTop = '12px';
+        noteP.textContent =
+          'These amounts are the relay\'s published per-token rates applied to the token counts this box recorded, not figures copied from an invoice. ' +
+          'The reviewer-job workload shape comes from the harness named in ' + (rj.harness || 'the benchmark harness') + ' across ' + fmtInt(rj.n) + ' jobs, ' +
+          'whose median elapsed time is ' + fmtSec(rj.median_elapsed_s) + ', with median prompt of ' + fmtInt(rj.median_in_tok) + ' tokens and median output of ' + fmtInt(rj.median_out_tok) + ' tokens. ' +
+          'A model reporting cache-write tokens is billed for them, which is why one model can be cheapest per call and still cost more on a job whose whole prompt is fresh.';
+
+        mount2.replaceChildren(tableWrap, noteP);
+      }
+      function renderRoles() {
+        const mount = document.querySelector('#s-roles .mount');
+        const roleMapUl = document.getElementById('role-map');
+        const sRoles = document.getElementById('s-roles');
+        if (!mount || !roleMapUl || !sRoles || !D || !MODELS) return;
+
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'table-wrap';
+
+        const table = document.createElement('table');
+        const tbody = document.createElement('tbody');
+
+        const roleMap = D.role_map || {};
+        Object.keys(roleMap).forEach((slotKey) => {
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'row');
+          th.textContent = slotKey;
+          tr.appendChild(th);
+
+          const modelId = roleMap[slotKey];
+          const matchedModel = MODELS.find((m) => m.our_usage && m.our_usage.model === modelId);
+
+          const td = document.createElement('td');
+          if (matchedModel) {
+            td.textContent = matchedModel.short;
+          } else {
+            td.textContent = modelId;
+            td.className = 'vendor-value';
+          }
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+        mount.replaceChildren(tableWrap);
+
+        const listFrag = document.createDocumentFragment();
+        MODELS.forEach((m) => {
+          const li = document.createElement('li');
+          const modelId = (m.our_usage && m.our_usage.model) || m.slug;
+          const profiles = (D.profile_map && D.profile_map[modelId]) ? D.profile_map[modelId] : [];
+          const auxSlots = m.aux_slots || [];
+
+          let profilePart;
+          if (profiles.length > 0) {
+            const countStr = fmtInt(profiles.length);
+            const word = profiles.length === 1 ? 'profile runs it' : 'profiles run it';
+            profilePart = countStr + ' ' + word + ': ' + profiles.join(', ') + '.';
+          } else {
+            profilePart = 'No profile runs it.';
+          }
+
+          let auxPart;
+          if (auxSlots.length > 0) {
+            auxPart = 'Auxiliary slots: ' + auxSlots.join(', ') + '.';
+          } else {
+            auxPart = 'No auxiliary slots.';
+          }
+
+          li.textContent = m.short + ': ' + profilePart + ' ' + auxPart;
+          listFrag.appendChild(li);
+        });
+        roleMapUl.replaceChildren(listFrag);
+
+        const noteP = document.createElement('p');
+        noteP.className = 'secondary';
+        noteP.textContent =
+          'The roles below are read from this box\'s own configuration file, not from a scoring exercise, and the reader should not read a quality ranking into them.';
+
+        const existingNote = sRoles.querySelector('p.secondary');
+        if (existingNote) existingNote.remove();
+        sRoles.appendChild(noteP);
+      }
+
+      function renderCaveats() {
+        const caveatsUl = document.getElementById('caveats');
+        if (!caveatsUl) return;
+
+        const items = [
+          'Timings are self-timed by the client that made the call, so they include queueing and network, and the three models were not run in isolation from each other.',
+          'The head-to-head probe is one frozen prompt set run once per model, sequentially, so it shows behaviour and not a variance estimate.',
+          'Vendor scores in the comparison table are the vendor\'s own published index, not reproduced here.',
+          'Costs are the relay\'s published rates applied to token counts recorded on this machine, not figures copied from an invoice.',
+          'The image check records whether a model returned the printed code and the circle colour from one card, and both verdicts are computed from the stored reply; it is not a vision benchmark.',
+          'Every number on this page comes from one relay on one key, so it says nothing about the same models served by their own first-party APIs.',
+          'Two of the three models answer from inside a reasoning budget that the token cap can consume before any visible output appears, which is a property of the serving configuration, not of model quality.'
+        ];
+
+        const frag = document.createDocumentFragment();
+        items.forEach((text) => {
+          const li = document.createElement('li');
+          li.textContent = text;
+          frag.appendChild(li);
+        });
+
+        caveatsUl.replaceChildren(frag);
+      }
+
+      function renderFooter() {
+        const foot = document.getElementById('page-foot');
+        if (!foot || !D) return;
+
+        const ts = D.generated_at || '';
+        const tsParts = ts.split('T');
+        const genDate = tsParts[0] || '';
+        const genTime = tsParts[1] || '';
+        const relayStr = D.relay || '';
+        const noteStr = (D.bench_method && D.bench_method.note) ? D.bench_method.note : '';
+        const benchDate = (D.bench_method && D.bench_method.date) ? D.bench_method.date : genDate;
+
+        foot.textContent =
+          'Generated ' + ts + ' (date: ' + genDate + ', time: ' + genTime + ', benchmark date: ' + benchDate + ') via relay ' + relayStr + '. ' +
+          noteStr + ' ' +
+          'This page renders the file data.js, which is generated, so no figure on the page is typed by hand.';
+      }
+
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          if (isDark) {
+            document.documentElement.removeAttribute('data-theme');
+            themeToggle.setAttribute('aria-pressed', 'false');
+            themeToggle.textContent = 'Dark theme';
+          } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.setAttribute('aria-pressed', 'true');
+            themeToggle.textContent = 'Light theme';
+          }
+        });
+      }
+
+      const metricGroup = document.getElementById('metric-group');
+      if (metricGroup) {
+        metricGroup.addEventListener('click', (e) => {
+          const btn = e.target.closest('button');
+          if (!btn || !metricGroup.contains(btn)) return;
+          if (btn.id === 'metric-speed') currentMetric = 'speed';
+          else if (btn.id === 'metric-cache') currentMetric = 'cache';
+          else if (btn.id === 'metric-ctx') currentMetric = 'ctx';
+          else return;
+
+          const btns = metricGroup.querySelectorAll('button');
+          btns.forEach((b) => {
+            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          });
+          renderStrip();
+        });
+      }
+
+      function renderAll() {
+        renderVerdict();
+        renderSpec();
+        renderLatency();
+        renderProbe();
+        renderCost();
+        renderRoles();
+        renderCaveats();
+        renderFooter();
+      }
+
+      renderAll();
+    })();
+  </script>
+</body>
+</html>

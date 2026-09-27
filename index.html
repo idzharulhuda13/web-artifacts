@@ -591,7 +591,7 @@
       <div class="band-copy">
         <span class="band-eyebrow">artifacts / repo root</span>
         <h1 class="band-title">WEB ARTIFACTS</h1>
-        <p class="band-desc">Three interactive tools. Browser-native, no framework at runtime.</p>
+        <p class="band-desc">Four interactive tools. Browser-native, no framework at runtime.</p>
       </div>
       <div class="band-grid-aside" aria-hidden="true">
         <div class="tech-grid-panel">
@@ -913,10 +913,48 @@
       </div>
     </article>
 
+    <!-- Plate 04 / plate-04: Model Bench -->
+    <article class="plate-section plate-04 reveal-item">
+      <div class="plate-content">
+        <div class="plate-header">
+          <span class="plate-num">04</span>
+          <span class="plate-tag">Measurement</span>
+        </div>
+        <h2 class="plate-title">Model Bench</h2>
+        <p class="plate-desc">
+          You put three models through the same frozen prompt set on one relay, and the bench prints what each one actually did. Every figure in it is either measured on the machine that ran the probe or quoted from the provider's own page.
+        </p>
+        <div class="plate-action">
+          <a class="plate-link" href="./model-bench/">Open Model Bench</a>
+        </div>
+      </div>
+
+      <div class="plate-media">
+        <div class="chart-frame">
+          <!-- Hand-built SVG preview drawn from the artifact's own measured quantities: median output speed per model across probe runs on one relay. Every number in the frame comes from that measurement. -->
+          <svg class="chart-svg" viewBox="0 0 540 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Median output speed comparison for three models">
+            <rect width="540" height="280" fill="#10130F" />
+            <rect x="0" y="0" width="540" height="36" fill="rgba(60,74,68,0.3)" />
+            <line x1="0" y1="36" x2="540" y2="36" stroke="rgba(237,234,226,0.15)" stroke-width="1" />
+            <text x="16" y="23" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="500">OUTPUT SPEED: MEDIAN TOK/S</text>
+            <text x="20" y="95" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">MiMo 2.6 Flash</text>
+            <rect x="190" y="80" width="92.7" height="20" fill="#EDEAE2" />
+            <text x="293" y="95" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">43.7 tok/s</text>
+            <text x="20" y="160" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">DeepSeek V4.1 Flash</text>
+            <rect x="190" y="145" width="240" height="20" fill="#FF4D00" />
+            <text x="440" y="160" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">113.1 tok/s</text>
+            <text x="20" y="225" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">GPT-6 Luna</text>
+            <rect x="190" y="210" width="117.1" height="20" fill="#3C4A44" stroke="rgba(237,234,226,0.3)" stroke-width="1" />
+            <text x="317" y="225" fill="#EDEAE2" font-family="IBM Plex Mono, monospace" font-size="12">55.2 tok/s</text>
+          </svg>
+        </div>
+      </div>
+    </article>
+
     <!-- Colophon Footer -->
     <footer class="colophon">
       <div class="colophon-meta">
-        <span>3 published artifacts</span>
+        <span>4 published artifacts</span>
         <span>Hand-written files, browser-native, no framework at runtime</span>
       </div>
       <div class="colophon-links">
